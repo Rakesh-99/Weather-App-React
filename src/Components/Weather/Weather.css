@@ -118,10 +118,10 @@
     grid-template-columns: repeat(2, 1fr);
     column-gap: 0;
     row-gap: 0;
-    width: 400px;
+    width: 450px;
   }
   .weatherContainer .leftContent {
-    width: 400px;
+    width: 450px;
   }
   .searchBox input {
     width: 250px;
