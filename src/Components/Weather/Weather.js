@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Weather.css';
 import axios from 'axios';
 import Sunny from '../../Assets/sunny.png';
@@ -25,8 +25,8 @@ const Weather = () => {
     const [isError, setError] = useState('');
 
     const [weatherInfo, setWeatherInfo] = useState({
-        name: 'Odisha',
-        celsius: '30',
+        name: '',
+        celsius: '',
         humidity: '',
         speed: '',
         pressure: '',
@@ -48,54 +48,62 @@ const Weather = () => {
 
             let imgPath = ''
 
-            axios.get(baseUrl).then((res) => {
+            try {
 
-                console.log(res.data)
+                axios.get(baseUrl).then((res) => {
 
+                    if (res.data.weather[0].main === 'Clouds') {
+                        imgPath = Cloudy
+                    } else if (res.data.weather[0].main === 'Sunny') {
+                        imgPath = Sunny
+                    } else if (res.data.weather[0].main === 'Mist') {
+                        imgPath = Mist;
+                    } else if (res.data.weather[0].main === 'Haze') {
+                        imgPath = Haze;
+                    } else if (res.data.weather[0].main === 'Drizzle') {
+                        imgPath = Drizzle;
+                    } else if (res.data.weather[0].main === 'Snowy') {
+                        imgPath = Snowy;
+                    } else {
+                        imgPath = ClearWeather;
+                    }
 
-                if (res.data.weather[0].main === 'Clouds') {
-                    imgPath = Cloudy
-                } else if (res.data.weather[0].main === 'Sunny') {
-                    imgPath = Sunny
-                } else if (res.data.weather[0].main === 'Mist') {
-                    imgPath = Mist;
-                } else if (res.data.weather[0].main === 'Haze') {
-                    imgPath = Haze;
-                } else if (res.data.weather[0].main === 'Drizzle') {
-                    imgPath = Drizzle;
-                } else if (res.data.weather[0].main === 'Snowy') {
-                    imgPath = Snowy;
-                } else {
-                    imgPath = ClearWeather;
-                }
+                    setWeatherInfo({
+                        ...weatherInfo,
+                        name: res.data.name,
+                        celsius: res.data.main.temp,
+                        humidity: res.data.main.humidity,
+                        speed: res.data.wind.speed,
+                        pressure: res.data.main.pressure,
+                        maximumTemperature: res.data.main.temp_max,
+                        minimumTemperature: res.data.main.temp_min,
+                        feels_like: res.data.main.feels_like,
+                        sea_level: res.data.main.sea_level,
+                        country: res.data.sys.country,
+                        visibility: res.data.visibility,
+                        weather: res.data.weather[0].main,
+                        weatherImg: imgPath
 
-                setWeatherInfo({
-                    ...weatherInfo,
-                    name: res.data.name,
-                    celsius: res.data.main.temp,
-                    humidity: res.data.main.humidity,
-                    speed: res.data.wind.speed,
-                    pressure: res.data.main.pressure,
-                    maximumTemperature: res.data.main.temp_max,
-                    minimumTemperature: res.data.main.temp_min,
-                    feels_like: res.data.main.feels_like,
-                    sea_level: res.data.main.sea_level,
-                    country: res.data.sys.country,
-                    visibility: res.data.visibility,
-                    weather: res.data.weather[0].main,
-                    weatherImg: imgPath
-
-                })
-                setError('');
-            }).catch((error) => {
-                if (error.response.statusText === 'Not Found') {
-                    setError('Invalid City entered !');
-                } else {
+                    })
                     setError('');
-                }
-            });
-        }
-    }
+                }).catch((error) => {
+                    if (error.response.statusText === 'Not Found') {
+                        setError('*Invalid City entered');
+                    } else {
+                        setError('');
+                    }
+                });
+            } catch (error) {
+                setError(error);
+            }
+        } else if (!name) {
+            setError('*City name is required');
+        };
+    };
+
+    useEffect(() => {
+        setName('');
+    }, [])
 
     return (
 
@@ -105,14 +113,14 @@ const Weather = () => {
                 <div className="weatherContainer">
 
                     <div className="leftContent">
-                        <span style={{ color: 'red', fontSize: '20px' }}>{isError}</span>
+                        <span style={{ color: 'red', fontSize: '20px', fontWeight: 900 }}>{isError}</span>
 
                         <div className="search">
                             <div className="searchBox">
                                 <input type="text" placeholder='Enter City name' onChange={(e) => setName(e.target.value)} />
                             </div>
                             <div className="searchIconContainer">
-                                {<FaSearchLocation className='searchIcon' onClick={handleClick} />}
+                                <button onClick={handleClick}>{<FaSearchLocation className='searchIcon' />}</button>
                             </div>
                         </div>
 
@@ -133,7 +141,7 @@ const Weather = () => {
 
 
                         <div className="forecast">
-                            <GiModernCity />
+                            <GiModernCity className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.country}</h6>
@@ -144,7 +152,7 @@ const Weather = () => {
                             </div>
                         </div>
                         <div className="forecast">
-                            <TbWind />
+                            <TbWind className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.speed}</h6>
@@ -156,7 +164,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <WiHumidity />
+                            <WiHumidity className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.humidity}</h6>
@@ -168,7 +176,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <BsArrowsExpand />
+                            <BsArrowsExpand className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.pressure}</h6>
@@ -180,7 +188,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <TbTemperatureMinus />
+                            <TbTemperatureMinus className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.minimumTemperature}</h6>
@@ -204,7 +212,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <MdOutlineEmojiEmotions />
+                            <MdOutlineEmojiEmotions className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.feels_like}</h6>
@@ -216,7 +224,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <TiWeatherSunny />
+                            <TiWeatherSunny className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.weather}</h6>
@@ -228,7 +236,7 @@ const Weather = () => {
                         </div>
 
                         <div className="forecast">
-                            <MdOutlineVisibility />
+                            <MdOutlineVisibility className='icons' />
                             <div className='speedAndTitle'>
                                 <div className="windSpeed">
                                     <h6>{weatherInfo.visibility}</h6>
@@ -243,6 +251,6 @@ const Weather = () => {
             </div>
         </>
     )
-}
+};
 
-export default Weather
+export default Weather;
