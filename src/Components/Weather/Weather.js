@@ -7,6 +7,7 @@ import Cloudy from '../../Assets/cloudy.png';
 import Snowy from '../../Assets/snowy.png';
 import Haze from '../../Assets/Haze.jpg';
 import Drizzle from '../../Assets/Drizzle.png';
+import Dust from '../../Assets/Dust.png'
 import clearWeather from '../../Assets/clearWeather.png';
 
 import { FaSearchLocation } from 'react-icons/fa';
@@ -64,8 +65,10 @@ const Weather = () => {
                         imgPath = Drizzle;
                     } else if (res.data.weather[0].main === 'Snowy') {
                         imgPath = Snowy;
+                    } else if (res.data.weather[0].main === 'Dust') {
+                        imgPath = Dust;
                     } else {
-                        imgPath = ClearWeather;
+                        imgPath = clearWeather;
                     }
 
                     setWeatherInfo({
