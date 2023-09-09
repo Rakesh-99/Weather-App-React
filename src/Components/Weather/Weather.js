@@ -22,6 +22,8 @@ import { GiModernCity } from 'react-icons/gi';
 
 const Weather = () => {
 
+
+
     const [name, setName] = useState('');
     const [isError, setError] = useState('');
 
